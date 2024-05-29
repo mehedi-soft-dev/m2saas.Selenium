@@ -33,7 +33,7 @@ public class WebDriverManager
         if (_driver != null)
         {
             _driver.Quit();
-            _driver.Dispose();
+            _driver = null;
         }
     }
 }
