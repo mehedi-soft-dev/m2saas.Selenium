@@ -4,13 +4,15 @@ namespace M2Saas.Crm.Website.Models.TestData;
 
 public class LoginData
 {
+    private ExcelHelper _excelHelper;
+
     public string Username { get; set; }
     public string Password { get; set; }
 
     public static LoginData ValidUser => new LoginData
     {
-        Username = "ripon@onnorokom.com",
-        Password = "KawranBazar12#"
+        Username = "ripon5857@onnorokom.com",
+        Password = "123456#"
     };
 
     public static LoginData InvalidUser => new LoginData
@@ -22,6 +24,7 @@ public class LoginData
     public static IEnumerable<LoginData> GetTestDataFromExcel(string filePath)
     {
         var loginDataList = new List<LoginData>();
+
         var data = ExcelHelper.ReadExcelData(filePath, "LoginData");
 
         foreach (var row in data)

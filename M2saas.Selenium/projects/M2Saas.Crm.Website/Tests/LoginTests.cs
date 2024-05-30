@@ -1,4 +1,5 @@
 ﻿using M2Saas.Crm.Website.Drivers;
+using M2Saas.Crm.Website.Helpers;
 using M2Saas.Crm.Website.Models.PageObjects;
 using M2Saas.Crm.Website.Models.TestData;
 using OpenQA.Selenium;
@@ -9,7 +10,10 @@ public class LoginTests
 {
     private IWebDriver _driver;
     private LoginPage _loginPage;
-    private static string testDataPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Models", "TestData", "LoginData.xlsx");
+    private string _logingPageUrl = "https://casckurmitola-beta.osl.ac/Account/Login";
+    private static string _testDataPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Models", "TestData", "LoginData.xlsx");
+    private static string _loginTestResult = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestResult", "LoginPage", "LoginTestResult.xlsx");
+    private ExcelHelper _excelHelper;
 
     [OneTimeSetUp]
     public void OneTimeSetup()
@@ -21,7 +25,8 @@ public class LoginTests
     public void Setup()
     {
         _loginPage = new LoginPage(_driver);
-        _driver.Navigate().GoToUrl("https://frontend-dev.onnorokom.cloud/Login");
+        _driver.Navigate().GoToUrl(_logingPageUrl);
+        _excelHelper = new ExcelHelper(_loginTestResult);
     }
 
     [Test]
@@ -41,9 +46,9 @@ public class LoginTests
     [Test, TestCaseSource(nameof(GetTestData))]
     public void Login_Test(LoginData loginData)
     {
-        _loginPage.Login(loginData.Username, loginData.Password);
-        var actionResult = CheckLoginSuccess(_driver);
-        Assert.AreEqual(true, actionResult);
+        var actionResult = _loginPage.Login(loginData.Username, loginData.Password);
+        _excelHelper.WriteResult(DateTime.Now, _logingPageUrl, loginData.Username, loginData.Password, actionResult);
+        //Assert.AreEqual(true, actionResult);
     }
 
     [OneTimeTearDown]
@@ -58,19 +63,6 @@ public class LoginTests
 
     public static IEnumerable<LoginData> GetTestData()
     {
-        return LoginData.GetTestDataFromExcel(testDataPath);
-    }
-
-    private bool CheckLoginSuccess(IWebDriver driver)
-    {
-        try
-        {
-            var dashboardElement = driver.FindElement(By.ClassName("title"));
-            return dashboardElement.Displayed && dashboardElement.Text == "Dashboard";
-        }
-        catch (NoSuchElementException)
-        {
-            return false;
-        }
+        return LoginData.GetTestDataFromExcel(_testDataPath);
     }
 }

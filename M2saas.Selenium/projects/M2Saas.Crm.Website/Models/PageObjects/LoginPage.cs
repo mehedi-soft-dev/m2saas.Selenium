@@ -13,13 +13,27 @@ public class LoginPage
 
     private IWebElement EmailField => _driver.FindElement(By.XPath("//*[@id=\"Email\"]"));
     private IWebElement PasswordField => _driver.FindElement(By.XPath("//*[@id=\"Password\"]"));
-    private IWebElement LoginButton => _driver.FindElement(By.XPath("/html/body/main/section/form/div/div[3]/button"));
-    private IWebElement DashboardElement = null;
+    private IWebElement LoginButton => _driver.FindElement(By.XPath("//*[@id=\"login-submit\"]"));
 
-    public void Login(string username, string password)
+    public bool Login(string username, string password)
     {
         EmailField.SendKeys(username);
         PasswordField.SendKeys(password);
         LoginButton.Click();
+
+        return CheckLoginSuccess(_driver);
+    }
+
+    private bool CheckLoginSuccess(IWebDriver driver)
+    {
+        try
+        {
+            var dashboardElement = driver.FindElement(By.ClassName("page-header"));
+            return dashboardElement.Displayed && dashboardElement.Text == "Dashboard";
+        }
+        catch (NoSuchElementException)
+        {
+            return false;
+        }
     }
 }
